@@ -16,6 +16,7 @@ import Unocss from 'unocss/vite'
 import Shiki from 'markdown-it-shiki'
 import VueMacros from 'unplugin-vue-macros/vite'
 import WebfontDownload from 'vite-plugin-webfont-dl'
+import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
 export default defineConfig({
   resolve: {
@@ -25,6 +26,14 @@ export default defineConfig({
   },
 
   plugins: [
+    nodePolyfills({
+      // To exclude specific polyfills, add them to this list.
+      exclude: [
+        'fs', // Excludes the polyfill for `fs` and `node:fs`.
+      ],
+      // Whether to polyfill `node:` protocol imports.
+      protocolImports: true,
+    }),
     VueMacros({
       plugins: {
         vue: Vue({
