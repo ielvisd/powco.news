@@ -9,7 +9,6 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
-    Article: typeof import('./components/Article.vue')['default']
     ArticleItem: typeof import('./components/ArticleItem.vue')['default']
     BoostButton: typeof import('./components/BoostButton.vue')['default']
     Error: typeof import('./components/Error.vue')['default']

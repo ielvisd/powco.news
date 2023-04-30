@@ -36,6 +36,8 @@ export default defineComponent({
     onBoostSuccess() {
       // eslint-disable-next-line no-console
       console.log('boosted successfully')
+      alert('boosted successfully')
+      this.showSuperBoost = false
     },
     async getExchangeRateAndShowSuperBoost() {
       const exchangeRateResponse = await fetch('https://api.whatsonchain.com/v1/bsv/main/exchangerate')
