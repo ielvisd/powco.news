@@ -171,6 +171,13 @@ function cleanString(input: string) {
   return output
 }
 
+const totalBoost = (boostedItem) => {
+  const total = boostedItem.tags.reduce((acc, cur) => {
+    return acc + cur.difficulty
+  }, 0)
+  return total
+}
+
 // test the response
 function getBoostedFeeds() {
   fetch('https://pow.co/api/v1/boost/rankings?start_date=1680220658&tag=706f77636f2e727373').then((data) => {
@@ -192,6 +199,12 @@ function getBoostedFeeds() {
     boostedFeeds.value = boostedFeedData
     return boostedFeedData
   })
+}
+
+const niceFeedTitle = (feed) => {
+  const title = feed.content?.content_text ? feed.content.content_text : feed?.content.content_json?.url
+
+  return title.length > 24 ? title.substring(0, 24) + '...' : title
 }
 
 function setBoostedFeed(feed) {
@@ -241,19 +254,21 @@ const boostedFeed = ref(null)
         >
           <ul>
             <li
-              v-for="feed in boostedFeeds"
+              v-for="(feed, index) in boostedFeeds"
               :key="feed.content.id"
               class="flex flex-col cursor-pointer items-center justify-center md:flex-row md:items-start space-y-4 md:space-x-6 md:space-y-0"
               @click="setBoostedFeed(feed)"
             >
-              <a v-if="feed.image" :href="feed.url" target="_blank" rel="noopener noreferrer">
-                <img :src="feed.image" class="h-20 w-20 rounded-full">
-              </a>
-              <div class="flex flex-col space-y-2">
-                <h2 class="text-2xl font-medium text-gray-800 md:text-lg dark:text-white">
-                  {{ feed.content.content_text ? feed.content.content_text : feed?.content?.content_json?.url }}
-                </h2>
-              </div>
+            <!-- Shows the rank (index), the name of the feed (shortened with ellipses if needed) & the difficulty -->
+              <span class="text-2xl font-medium text-gray-800 md:text-xl dark:text-white">
+                {{ index + 1 }}
+              </span>
+              <span class="text-gray-500 dark:text-gray-300">
+                    {{ niceFeedTitle(feed) }}
+              </span>
+              <span class="text-gray-500 dark:text-gray-300">
+                ⛏️{{ totalBoost(feed).toFixed(4) }}
+              </span>
             </li>
           </ul>
         </div>
