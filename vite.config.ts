@@ -24,7 +24,12 @@ export default defineConfig({
       '~/': `${path.resolve(__dirname, 'src')}/`,
     },
   },
-
+  // NOTE: I think this is what fixed the deployment issues I was having with Vercel + StagWallet (require not defined)
+  build: {
+    commonjsOptions: {
+      transformMixedEsModules: true
+    }
+  },
   plugins: [
     nodePolyfills({
       // To exclude specific polyfills, add them to this list.
