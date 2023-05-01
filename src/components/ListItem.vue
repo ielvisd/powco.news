@@ -33,9 +33,9 @@ export default defineComponent({
     },
   },
   methods: {
-    onBoostSuccess() {
+    onBoostSuccess(txid) {
       // eslint-disable-next-line no-console
-      console.log('boosted successfully')
+      console.log('boosted successfully, txid is: ', txid)
       alert('boosted successfully')
       this.showSuperBoost = false
     },
