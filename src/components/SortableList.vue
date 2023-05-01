@@ -54,20 +54,26 @@ export default defineComponent({
 </script>
 
 <template>
-  <div class="feed__header bg-white">
-    <h3 text-lg font-bold md:text-xl>
-      {{ title }}
-    </h3>
-    <button class="feed__header-button btn" @click="sortBy('title')">
-      Title {{ sorting.field === "title" ? (sorting.dir === "asc" ? "&darr;" : "&uarr;") : "" }}
-    </button>
-    <button class="feed__header-button btn" @click="sortBy('pubDate')">
-      Date {{ sorting.field === "pubDate" ? (sorting.dir === "asc" ? "&darr;" : "&uarr;") : "" }}
-    </button>
+  <div
+    v-if="feed.length"
+    class="border-2"
+  >
+    <div class="feed__header w-full">
+      <h3 text-lg font-bold md:text-xl>
+        {{ title }}
+      </h3>
+      <button class="feed__header-button btn" @click="sortBy('title')">
+        Title {{ sorting.field === "title" ? (sorting.dir === "asc" ? "&darr;" : "&uarr;") : "" }}
+      </button>
+      <button class="feed__header-button btn" @click="sortBy('pubDate')">
+        Date {{ sorting.field === "pubDate" ? (sorting.dir === "asc" ? "&darr;" : "&uarr;") : "" }}
+      </button>
+    </div>
+    <ol class="feed__list">
+      <ListItem v-for="item in sortedFeed" :key="item.guid" :item="item" @click="activeItem = item" />
+    </ol>
   </div>
-  <ol class="feed__list">
-    <ListItem v-for="item in sortedFeed" :key="item.guid" :item="item" @click="activeItem = item" />
-  </ol>
+
   <Modal v-if="activeItem" :item="activeItem" @close="activeItem = null" />
 </template>
 

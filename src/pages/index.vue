@@ -149,14 +149,57 @@ import { onMounted, ref } from 'vue'
 
 const user = useUserStore()
 
-onMounted(() => {
+const boostedFeeds = ref([])
+
+onMounted(async () => {
   user.getExchangeRate()
+  const test = await getBoostedFeeds()
+  console.log('test', test)
 })
 
 const response = ref<ResponseState>(null)
 function setResponse(data: ResponseState) {
   response.value = data
 }
+
+function cleanString(input: string) {
+  let output = ''
+  for (let i = 0; i < input.length; i++) {
+    if (input.charCodeAt(i) <= 127)
+      output += input.charAt(i)
+  }
+  return output
+}
+
+// test the response
+function getBoostedFeeds() {
+  fetch('https://pow.co/api/v1/boost/rankings?start_date=1680220658&tag=706f77636f2e727373').then((data) => {
+    console.log('data', data)
+    const response = data.json()
+    return response
+  }).then(async (response) => {
+    console.log('response', response)
+    // Get the data for the first 10 items in response.rankings
+    const topTenBoostedFeeds = response.rankings.slice(0, 10)
+
+    // Get the content from each feed from the powco api, return the results not an array of promises
+    const boostedFeedData = await Promise.all(topTenBoostedFeeds.map(async (feed) => {
+      const feedResponse = await fetch(`https://pow.co/api/v1/content/${feed.content_txid}`)
+      const feedData = await feedResponse.json()
+      return feedData
+    }))
+    console.log('boostedFeedData', boostedFeedData)
+    boostedFeeds.value = boostedFeedData
+    return boostedFeedData
+  })
+}
+
+function setBoostedFeed(feed) {
+  console.log('setBoostedFeed', feed)
+  boostedFeed.value = feed.content.content_text
+}
+
+const boostedFeed = ref(null)
 </script>
 
 <template>
@@ -164,13 +207,53 @@ function setResponse(data: ResponseState) {
     <h1 my-auto text-lg prose md:text-3xl>
       POWCO News
     </h1>
-    <FeedSearch @response="response = $event" />
+    <FeedSearch :boosted-feed="boostedFeed" @response="response = $event" />
   </header>
   <main>
     <h3 v-if="response && 'error' in response" class="error">
       {{ response.error }}
     </h3>
-    <SortableList v-if="response && 'feed' in response" :title="response.feed.title" :feed="response.items" />
+    <div
+      class="mx-auto my-4 h-full w-full flex flex-col items-start justify-center rounded-lg bg-white p-4 shadow-md md:flex-row md:justify-around dark:bg-gray-800 md:shadow-xl"
+    >
+      <SortableList v-if="response && 'feed' in response" :title="response.feed.title" :feed="response.items" />
+      <!-- A card that has a list of trending RSS feeds  -->
+
+      <div
+        class="w-2/5 flex flex-col items-center justify-center border-2 text-center md:flex-row md:flex-wrap md:items-start md:space-x-6"
+      >
+        <div class="w-full flex flex-col space-y-2">
+          <h2 class="text-2xl font-medium text-gray-800 md:text-3xl dark:text-white">
+            Trending RSS Feeds
+          </h2>
+          <p class="text-gray-500 dark:text-gray-300">
+            Here are some of the most popular RSS feeds on the web.
+          </p>
+        </div>
+        <!-- The list of RSS feeds -->
+        <div
+          class="flex flex-col items-center justify-center md:mt-4 md:flex-row md:items-start space-y-4 md:space-x-6 md:space-y-0"
+        >
+          <ul>
+            <li
+              v-for="feed in boostedFeeds"
+              :key="feed.content.id"
+              class="flex flex-col items-center justify-center md:flex-row md:items-start space-y-4 md:space-x-6 md:space-y-0"
+              @click="setBoostedFeed(feed)"
+            >
+              <a v-if="feed.image" :href="feed.url" target="_blank" rel="noopener noreferrer">
+                <img :src="feed.image" class="h-20 w-20 rounded-full">
+              </a>
+              <div class="flex flex-col space-y-2">
+                <h2 class="text-2xl font-medium text-gray-800 md:text-xl dark:text-white">
+                  {{ feed.content.content_text }}
+                </h2>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </main>
 </template>
 

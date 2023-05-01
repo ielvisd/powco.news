@@ -9,19 +9,37 @@ export default defineComponent({
   components: {
     SearchInput,
   },
+  props: ['boostedFeed'],
   emits: {
     response: (data: ResponseState) => data !== undefined,
   },
   setup(props, { emit }) {
     const url = ref(getHistory()[0].url)
+    console.log('props', props)
+    // TODO: Use rss-parser instead of rss2json
     const feedUrl = computed(() => `https://api.rss2json.com/v1/api.json?rss_url=${url.value}`)
     const response = useFetch(feedUrl)
 
-    watch(response, () => {
-      emit('response', response.value)
-      if (response.value && 'feed' in response.value)
-        addHistoryItem(response.value.feed)
-    })
+    watch([response, () => props.boostedFeed], ([newResponse, newBoostFeed]) => {
+      console.log('newResponse', newResponse, 'newBoostFeed', newBoostFeed)
+      if (props.boostedFeed) {
+        console.log('boostedFeed', props.boostedFeed)
+        url.value = props.boostedFeed
+        console.log('url', url)
+
+        emit('response', response.value)
+        if (props.boostedFeed.value && 'feed' in props.boostedFeed.value)
+          addHistoryItem(props.boostedFeed.value.feed)
+      }
+      else {
+        console.log('response', response)
+        emit('response', response.value)
+        if (response.value && 'feed' in response.value)
+          addHistoryItem(response.value.feed)
+      }
+    },
+
+    )
 
     return { url, response }
   },
