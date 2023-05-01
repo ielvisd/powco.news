@@ -196,7 +196,7 @@ function getBoostedFeeds() {
 
 function setBoostedFeed(feed) {
   console.log('setBoostedFeed', feed)
-  boostedFeed.value = feed.content.content_text
+  boostedFeed.value = feed.content?.content_text ? feed.content.content_text : feed?.content.content_json?.url
 }
 
 const boostedFeed = ref(null)
@@ -227,7 +227,12 @@ const boostedFeed = ref(null)
             Trending RSS Feeds
           </h2>
           <p class="text-gray-500 dark:text-gray-300">
-            Here are some of the most popular RSS feeds on the web.
+            Top 10 boosted RSS feeds using the
+            <span
+              class="font-medium text-pink-600 dark:text-white"
+            >
+              `powco.rss`
+            </span>tag
           </p>
         </div>
         <!-- The list of RSS feeds -->
@@ -238,15 +243,15 @@ const boostedFeed = ref(null)
             <li
               v-for="feed in boostedFeeds"
               :key="feed.content.id"
-              class="flex flex-col items-center justify-center md:flex-row md:items-start space-y-4 md:space-x-6 md:space-y-0"
+              class="flex flex-col cursor-pointer items-center justify-center md:flex-row md:items-start space-y-4 md:space-x-6 md:space-y-0"
               @click="setBoostedFeed(feed)"
             >
               <a v-if="feed.image" :href="feed.url" target="_blank" rel="noopener noreferrer">
                 <img :src="feed.image" class="h-20 w-20 rounded-full">
               </a>
               <div class="flex flex-col space-y-2">
-                <h2 class="text-2xl font-medium text-gray-800 md:text-xl dark:text-white">
-                  {{ feed.content.content_text }}
+                <h2 class="text-2xl font-medium text-gray-800 md:text-lg dark:text-white">
+                  {{ feed.content.content_text ? feed.content.content_text : feed?.content?.content_json?.url }}
                 </h2>
               </div>
             </li>

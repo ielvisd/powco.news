@@ -23,16 +23,13 @@ export default defineComponent({
     watch([response, () => props.boostedFeed], ([newResponse, newBoostFeed]) => {
       console.log('newResponse', newResponse, 'newBoostFeed', newBoostFeed)
       if (props.boostedFeed) {
-        console.log('boostedFeed', props.boostedFeed)
         url.value = props.boostedFeed
-        console.log('url', url)
 
         emit('response', response.value)
         if (props.boostedFeed.value && 'feed' in props.boostedFeed.value)
           addHistoryItem(props.boostedFeed.value.feed)
       }
       else {
-        console.log('response', response)
         emit('response', response.value)
         if (response.value && 'feed' in response.value)
           addHistoryItem(response.value.feed)

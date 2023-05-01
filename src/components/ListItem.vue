@@ -59,12 +59,12 @@ export default defineComponent({
     class="feed__item my-4 h-48 w-full overflow-hidden border-2 border-pink-600 rounded-lg bg-white p-4 md:w-4xl"
     tabIndex="0"
     role="button"
+    @click="$emit('click')" @keypress.self.enter.space.prevent="$emit('click')"
   >
     <div flex items-start justify-center>
       <div>
         <div
           class="feed__item-title text-lg font-bold"
-          @click="$emit('click')" @keypress.self.enter.space.prevent="$emit('click')"
         >
           {{ item.title }}
         </div>
@@ -77,7 +77,7 @@ export default defineComponent({
       <component
         :is="buttonType"
         class="pulse focus:shadow-outline flex cursor-pointer items-center border font-medium shadow hover:shadow-lg focus:outline-none"
-        @click="getExchangeRateAndShowSuperBoost"
+        @click.stop="getExchangeRateAndShowSuperBoost"
       >
         <p class="m-0 p-0 text-xl">
           🦚
