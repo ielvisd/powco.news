@@ -27,8 +27,8 @@ export default defineConfig({
   // NOTE: I think this is what fixed the deployment issues I was having with Vercel + StagWallet (require not defined)
   build: {
     commonjsOptions: {
-      transformMixedEsModules: true
-    }
+      transformMixedEsModules: true,
+    },
   },
   plugins: [
     nodePolyfills({
@@ -115,8 +115,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'safari-pinned-tab.svg'],
       manifest: {
-        name: 'Vitesse',
-        short_name: 'Vitesse',
+        name: 'POWCONews',
+        short_name: 'POWCONews',
         theme_color: '#ffffff',
         icons: [
           {

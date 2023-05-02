@@ -1,5 +1,3 @@
-const DEFAULT_VALUE = [{ title: 'o2oo', url: 'https://o2oo.li/feed/en/' }]
-
 export function getHistory(): FeedInfo[] {
   try {
     const history = localStorage.getItem('urlHistory')
@@ -9,7 +7,7 @@ export function getHistory(): FeedInfo[] {
   catch (e) {
     console.error(e)
   }
-  return DEFAULT_VALUE
+  return []
 }
 
 export function addHistoryItem({ title, url }: FeedInfo): void {

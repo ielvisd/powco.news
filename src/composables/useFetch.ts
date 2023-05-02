@@ -15,10 +15,8 @@ async function doFetch(url: string, options?: RequestInit) {
 
 export function useFetch(url: Ref<string>): Ref<ResponseState> {
   const response = ref<ResponseState>(null)
-  console.log('useFetch', url)
 
   watch(url, async (newUrl, _, onInvalidate) => {
-    console.log('watch', newUrl)
     const controller = new AbortController()
     let didCancel = false
     onInvalidate(() => {

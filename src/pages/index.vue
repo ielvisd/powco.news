@@ -149,12 +149,9 @@ import { onMounted, ref } from 'vue'
 
 const user = useUserStore()
 
-const boostedFeeds = ref([])
-
 onMounted(async () => {
   user.getExchangeRate()
-  const test = await getBoostedFeeds()
-  console.log('test', test)
+  await user.getBoostedFeeds()
 })
 
 const response = ref<ResponseState>(null)
@@ -171,44 +168,20 @@ function cleanString(input: string) {
   return output
 }
 
-const totalBoost = (boostedItem) => {
+function totalBoost(boostedItem) {
   const total = boostedItem.tags.reduce((acc, cur) => {
     return acc + cur.difficulty
   }, 0)
   return total
 }
 
-// test the response
-function getBoostedFeeds() {
-  fetch('https://pow.co/api/v1/boost/rankings?start_date=1680220658&tag=706f77636f2e727373').then((data) => {
-    console.log('data', data)
-    const response = data.json()
-    return response
-  }).then(async (response) => {
-    console.log('response', response)
-    // Get the data for the first 10 items in response.rankings
-    const topTenBoostedFeeds = response.rankings.slice(0, 10)
-
-    // Get the content from each feed from the powco api, return the results not an array of promises
-    const boostedFeedData = await Promise.all(topTenBoostedFeeds.map(async (feed) => {
-      const feedResponse = await fetch(`https://pow.co/api/v1/content/${feed.content_txid}`)
-      const feedData = await feedResponse.json()
-      return feedData
-    }))
-    console.log('boostedFeedData', boostedFeedData)
-    boostedFeeds.value = boostedFeedData
-    return boostedFeedData
-  })
-}
-
-const niceFeedTitle = (feed) => {
+function niceFeedTitle(feed) {
   const title = feed.content?.content_text ? feed.content.content_text : feed?.content.content_json?.url
 
-  return title.length > 24 ? title.substring(0, 24) + '...' : title
+  return title.length > 24 ? `${title.substring(0, 24)}...` : title
 }
 
 function setBoostedFeed(feed) {
-  console.log('setBoostedFeed', feed)
   boostedFeed.value = feed.content?.content_text ? feed.content.content_text : feed?.content.content_json?.url
 }
 
@@ -220,7 +193,7 @@ const boostedFeed = ref(null)
     <h1 my-auto text-lg prose md:text-3xl>
       POWCO News
     </h1>
-    <FeedSearch :boosted-feed="boostedFeed" @response="response = $event" />
+    <FeedSearch v-if="user.boostedFeeds.length" :boosted-feed="boostedFeed" @response="response = $event" />
   </header>
   <main>
     <h3 v-if="response && 'error' in response" class="error">
@@ -254,17 +227,17 @@ const boostedFeed = ref(null)
         >
           <ul>
             <li
-              v-for="(feed, index) in boostedFeeds"
+              v-for="(feed, index) in user.boostedFeeds"
               :key="feed.content.id"
               class="flex flex-col cursor-pointer items-center justify-center md:flex-row md:items-start space-y-4 md:space-x-6 md:space-y-0"
               @click="setBoostedFeed(feed)"
             >
-            <!-- Shows the rank (index), the name of the feed (shortened with ellipses if needed) & the difficulty -->
+              <!-- Shows the rank (index), the name of the feed (shortened with ellipses if needed) & the difficulty -->
               <span class="text-2xl font-medium text-gray-800 md:text-xl dark:text-white">
                 {{ index + 1 }}
               </span>
               <span class="text-gray-500 dark:text-gray-300">
-                    {{ niceFeedTitle(feed) }}
+                {{ niceFeedTitle(feed) }}
               </span>
               <span class="text-gray-500 dark:text-gray-300">
                 ⛏️{{ totalBoost(feed).toFixed(4) }}

@@ -14,8 +14,15 @@ export default defineComponent({
     response: (data: ResponseState) => data !== undefined,
   },
   setup(props, { emit }) {
-    const url = ref(getHistory()[0].url)
-    console.log('props', props)
+    const user = useUserStore()
+    const url = ref(getHistory()[0]?.url)
+
+    if (!url.value && user.boostedFeeds)
+      url.value = user.boostedFeeds[0]?.content?.content_text ? user.boostedFeeds[0]?.content?.content_text : user.boostedFeeds[0]?.content?.content_json?.url
+
+    else
+      url.value = 'https://www.reddit.com/.rss'
+
     // TODO: Use rss-parser instead of rss2json
     const feedUrl = computed(() => `https://api.rss2json.com/v1/api.json?rss_url=${url.value}`)
     const response = useFetch(feedUrl)
