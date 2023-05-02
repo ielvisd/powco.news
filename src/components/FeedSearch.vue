@@ -21,14 +21,13 @@ export default defineComponent({
       url.value = user.boostedFeeds[0]?.content?.content_text ? user.boostedFeeds[0]?.content?.content_text : user.boostedFeeds[0]?.content?.content_json?.url
 
     else
-      url.value = 'https://www.reddit.com/.rss'
+      url.value = 'https://nitter.net/proofofwork_co/rss'
 
     // TODO: Use rss-parser instead of rss2json
     const feedUrl = computed(() => `https://api.rss2json.com/v1/api.json?rss_url=${url.value}`)
     const response = useFetch(feedUrl)
 
     watch([response, () => props.boostedFeed], ([newResponse, newBoostFeed]) => {
-      console.log('newResponse', newResponse, 'newBoostFeed', newBoostFeed)
       if (props.boostedFeed) {
         url.value = props.boostedFeed
 
