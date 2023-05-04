@@ -56,7 +56,6 @@ export default defineComponent({
 <template>
   <div
     v-if="feed.length"
-    class="border-2"
   >
     <div class="feed__header w-full">
       <h3 text-lg font-bold md:text-xl>

@@ -79,8 +79,6 @@ const estimatedRank = ref(
 )
 const totalPriceInUSD = ref<number>(defaultPricePerDifficulty * difficulty.value + (defaultPricePerDifficulty * difficulty.value * boostSpeed.value / 100) * 1.1)
 
-console.log('user', user)
-
 const totalPriceInSatoshis = computed<number>(() => (totalPriceInUSD.value * 1e8 / user.exchangeRate).toFixed(0))
 
 const devFee = computed<number>(() => (totalPriceInSatoshis.value * 0.1))
@@ -126,8 +124,10 @@ async function boost() {
   // console.log('opReturn', opReturn, hexArrayOps, props.content, post)
   // Get the txid by removing the utxo from the token contract
   // const contentTxid = props?.content.substring(0, props?.content.indexOf('_'));
+  // eslint-disable-next-line no-async-promise-executor
   const promise = new Promise(async (resolve, reject) => {
     // Make a post with the URL if a txid is not provided
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-expect-error
     const stag = wrapRelayx(relayone)
 
@@ -152,6 +152,7 @@ async function boost() {
         },
       })
 
+      // eslint-disable-next-line no-console
       console.log('result', result, isNew)
 
       await stag.boost.buy({
@@ -163,6 +164,7 @@ async function boost() {
 
       if (props.onSuccess)
         props.onSuccess({ txid: result.txid })
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error
       relayone
         .send({
@@ -218,7 +220,7 @@ onMounted(() => {
           <div class="q-pa-md boostpow-dialog w-full text-center md:w-md">
             <div class="mb-4 flex items-center">
               <span
-                class="pulse focus:shadow-outline flex cursor-pointer items-center border text-3xl font-medium shadow hover:shadow-lg focus:outline-none"
+                class="pulse focus:shadow-outline flex cursor-pointer items-center text-3xl font-medium shadow hover:shadow-lg focus:outline-none"
               >🦚</span>
               <div class="font-bolder ml-2 text-lg font-medium">
                 Boostpow

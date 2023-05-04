@@ -44,8 +44,6 @@ export default defineComponent({
 
       const data = await exchangeRateResponse.json()
 
-      console.log('exchange rate', data)
-
       // round to w decimals
       this.exchangeRate = data.rate.toFixed(2)
       this.showSuperBoost = true
@@ -56,7 +54,7 @@ export default defineComponent({
 
 <template>
   <li
-    class="feed__item my-4 h-48 w-full overflow-hidden border-2 border-pink-600 rounded-lg bg-white p-4 md:w-4xl"
+    class="feed__item my-4 h-48 w-full overflow-hidden border-2 border-pink-600 rounded-lg p-4 md:w-4xl"
     tabIndex="0"
     role="button"
     @click="$emit('click')" @keypress.self.enter.space.prevent="$emit('click')"
@@ -76,7 +74,7 @@ export default defineComponent({
       </div>
       <component
         :is="buttonType"
-        class="pulse focus:shadow-outline flex cursor-pointer items-center border font-medium shadow hover:shadow-lg focus:outline-none"
+        class="pulse focus:shadow-outline flex cursor-pointer items-center font-medium shadow hover:shadow-lg focus:outline-none"
         @click.stop="getExchangeRateAndShowSuperBoost"
       >
         <p class="m-0 p-0 text-xl">
@@ -97,7 +95,6 @@ export default defineComponent({
 @import "../style/variables";
 
 .feed__item {
-  border-top: 1px solid $active-color;
   padding: $base-margin;
   cursor: pointer;
   outline: none;

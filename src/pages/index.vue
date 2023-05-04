@@ -181,11 +181,10 @@ function niceFeedTitle(feed) {
   return title.length > 24 ? `${title.substring(0, 24)}...` : title
 }
 
+const boostedFeed = ref(null)
 function setBoostedFeed(feed) {
   boostedFeed.value = feed.content?.content_text ? feed.content.content_text : feed?.content.content_json?.url
 }
-
-const boostedFeed = ref(null)
 </script>
 
 <template>
@@ -200,13 +199,13 @@ const boostedFeed = ref(null)
       {{ response.error }}
     </h3>
     <div
-      class="mx-auto my-4 h-full w-full flex flex-col items-start justify-center rounded-lg bg-white p-4 shadow-md md:flex-row md:justify-around dark:bg-gray-800 md:shadow-xl"
+      class="mx-auto my-4 h-full w-full flex flex-col items-start justify-center rounded-lg p-4 shadow-md md:flex-row md:justify-around md:shadow-xl"
     >
       <SortableList v-if="response && 'feed' in response" :title="response.feed.title" :feed="response.items" />
       <!-- A card that has a list of trending RSS feeds  -->
 
       <div
-        class="w-2/5 flex flex-col items-center justify-center border-2 text-center md:flex-row md:flex-wrap md:items-start md:space-x-6"
+        class="w-2/5 flex flex-col items-center justify-center text-center md:flex-row md:flex-wrap md:items-start md:space-x-6"
       >
         <div class="w-full flex flex-col space-y-2">
           <h2 class="text-2xl font-medium text-gray-800 md:text-3xl dark:text-white">
@@ -250,7 +249,7 @@ const boostedFeed = ref(null)
   </main>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import-normalize;
 @import url("https://fonts.googleapis.com/css?family=Roboto");
 @import "../style/variables";
