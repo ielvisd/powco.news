@@ -32,11 +32,11 @@ export default defineComponent({
         <h2 class="modal__header">
           {{ item.title }}
         </h2>
-        <button ref="closeButton" class="modal__close" type="button" @click="$emit('close')">
+        <button ref="closeButton" class="modal__close btn" type="button" @click="$emit('close')">
           &times;
         </button>
 
-        <a class="button modal__action" :href="item.link" target="_blank" rel="noopener noreferrer">
+        <a class="modal__action" :href="item.link" target="_blank" rel="noopener noreferrer">
           Read Full Story
         </a>
 
@@ -118,6 +118,34 @@ export default defineComponent({
 
   .modal__action {
     margin-bottom: $base-margin;
+    // Styling for a button
+    display: inline-block;
+    font-weight: 400;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    user-select: none;
+    border: 1px solid transparent;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: $primary-text-color;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out,
+      box-shadow 0.15s ease-in-out;
+    color: #fff;
+    background-color:  $primary-text-color;
+    border-color:  $primary-text-color;
+    text-decoration: none;
+    cursor: pointer;
+    &:hover {
+      background-color: $primary-text-color;
+      border-color: $primary-text-color;
+    }
+    &:focus {
+      outline: 0;
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
+    }
+
   }
 
   img {

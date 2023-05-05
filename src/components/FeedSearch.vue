@@ -14,14 +14,31 @@ export default defineComponent({
     response: (data: ResponseState) => data !== undefined,
   },
   setup(props, { emit }) {
+    function extractHostname(url: string): string | null {
+      // Find the beginning of the hostname
+      const protocolIndex = url.indexOf('://')
+      if (protocolIndex < 0)
+        return null // invalid URL
+
+      const hostnameBegin = protocolIndex + 3
+
+      // Find the end of the hostname
+      const firstDotIndex = url.indexOf('.', hostnameBegin)
+      const hostnameEnd = (firstDotIndex >= 0) ? firstDotIndex : url.length
+
+      // Extract the hostname
+      const hostname = url.substring(hostnameBegin, hostnameEnd)
+      return hostname
+    }
+
     const user = useUserStore()
     const url = ref(getHistory()[0]?.url)
 
     if (!url.value && user.boostedFeeds)
       url.value = user.boostedFeeds[0]?.content?.content_text ? user.boostedFeeds[0]?.content?.content_text : user.boostedFeeds[0]?.content?.content_json?.url
 
-    else
-      url.value = 'https://nitter.net/proofofwork_co/rss'
+    // else
+    //   url.value = 'https://nitter.net/proofofwork_co/rss'
 
     // TODO: Use rss-parser instead of rss2json
     const feedUrl = computed(() => `https://api.rss2json.com/v1/api.json?rss_url=${url.value}`)
@@ -30,19 +47,26 @@ export default defineComponent({
     watch([response, () => props.boostedFeed], ([newResponse, newBoostFeed]) => {
       if (props.boostedFeed) {
         url.value = props.boostedFeed
-
-        emit('response', response.value)
-        if (props.boostedFeed.value && 'feed' in props.boostedFeed.value)
+        if (props.boostedFeed.value && 'feed' in props.boostedFeed.value) {
+          emit('response', response.value)
           addHistoryItem(props.boostedFeed.value.feed)
+        }
+        else {
+          const hostName = extractHostname(props.boostedFeed)
+          const newBoostedFeed = {
+            title: hostName,
+            url: props.boostedFeed,
+          }
+          emit('response', response.value)
+          addHistoryItem(newBoostedFeed)
+        }
       }
       else {
         emit('response', response.value)
         if (response.value && 'feed' in response.value)
           addHistoryItem(response.value.feed)
       }
-    },
-
-    )
+    })
 
     return { url, response }
   },

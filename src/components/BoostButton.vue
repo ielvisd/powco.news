@@ -72,7 +72,7 @@ const defaultPricePerDifficulty = 2.18
 const boostSpeed = ref(50)
 
 // If the content has a difficulty level don't set a tag, otherwise set the tag to 'powco-show'
-const tag = ref(props.tag || (props.content.includes('difficulty') ? null : 'powco.news.post'))
+const tag = ref(props.tag || (props.content.includes('difficulty') ? null : 'powco.news'))
 const difficulty = ref(0.00025)
 const estimatedRank = ref(
   props.ranks.findIndex((rank: any) => rank.difficulty < difficulty.value) + 1,
@@ -135,32 +135,39 @@ async function boost() {
       if (props.onSending)
         props.onSending()
 
-      const [result, isNew] = await stag.onchain.findOrCreate({
-        where: {
-          app: 'pow.co',
-          type: 'url',
-          content: {
-            url: props.content,
+      if (!props?.content?.content?.txid) {
+        const [result, isNew] = await stag.onchain.findOrCreate({
+          where: {
+            app: 'pow.co',
+            type: 'url',
+            content: {
+              url: props.content,
+            },
           },
-        },
-        defaults: {
-          app: 'pow.co',
-          type: 'url',
-          content: {
-            url: props.content,
+          defaults: {
+            app: 'pow.co',
+            type: 'url',
+            content: {
+              url: props.content,
+            },
           },
-        },
-      })
+        })
 
-      // eslint-disable-next-line no-console
-      console.log('result', result, isNew)
-
-      await stag.boost.buy({
-        content: result.txid,
-        difficulty: difficulty.value,
-        value: totalPriceInSatoshis.value,
-        tag: tag.value,
-      })
+        await stag.boost.buy({
+          content: result.txid,
+          difficulty: difficulty.value,
+          value: totalPriceInSatoshis.value,
+          tag: tag.value,
+        })
+      }
+      else {
+        await stag.boost.buy({
+          content: props?.content?.content?.txid,
+          difficulty: difficulty.value,
+          value: totalPriceInSatoshis.value,
+          tag: tag.value,
+        })
+      }
 
       if (props.onSuccess)
         props.onSuccess({ txid: result.txid })

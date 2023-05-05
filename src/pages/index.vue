@@ -147,7 +147,11 @@ button,
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 
+const showSuperBoost = ref(false)
+const exchangeRate = ref(0)
+
 const user = useUserStore()
+const buttonType = 'button'
 
 onMounted(async () => {
   user.getExchangeRate()
@@ -184,6 +188,17 @@ function niceFeedTitle(feed) {
 const boostedFeed = ref(null)
 function setBoostedFeed(feed) {
   boostedFeed.value = feed.content?.content_text ? feed.content.content_text : feed?.content.content_json?.url
+}
+
+// TODO: move to store
+async function getExchangeRateAndShowSuperBoost() {
+  const exchangeRateResponse = await fetch('https://api.whatsonchain.com/v1/bsv/main/exchangerate')
+
+  const data = await exchangeRateResponse.json()
+
+  // round to w decimals
+  exchangeRate.value = data.rate.toFixed(2)
+  showSuperBoost.value = true
 }
 </script>
 
@@ -241,6 +256,23 @@ function setBoostedFeed(feed) {
               <span class="text-gray-500 dark:text-gray-300">
                 ⛏️{{ totalBoost(feed).toFixed(4) }}
               </span>
+              <!-- TODO: Extract the wrapper to the BoostButton component -->
+              <component
+                :is="buttonType"
+                class="pulse focus:shadow-outline flex cursor-pointer items-center font-medium shadow hover:shadow-lg focus:outline-none"
+                @click.stop="getExchangeRateAndShowSuperBoost"
+              >
+                <p class="m-0 p-0 text-xl">
+                  🦚
+                </p>
+                <BoostButton
+                  v-if="showSuperBoost"
+                  :content="feed"
+                  tag="powco.rss"
+                  :on-success="onBoostSuccess"
+                  class="" size="sm" round :ranks="ranksWithBoost" outline @close="showSuperBoost = false"
+                />
+              </component>
             </li>
           </ul>
         </div>
@@ -289,28 +321,6 @@ a {
   &:hover,
   &:focus {
     opacity: 0.7;
-  }
-}
-
-button,
-.button {
-  cursor: pointer;
-  display: inline-block;
-  font-size: $medium-font-size;
-  padding: $small-margin $base-margin;
-  background: $brand-color;
-  color: $brand-text-color;
-  border-radius: 2px;
-  border: 0;
-
-  &:hover,
-  &:focus {
-    opacity: 0.9;
-  }
-
-  &:active,
-  &:focus {
-    outline: none;
   }
 }
 
