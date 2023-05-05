@@ -214,13 +214,16 @@ async function getExchangeRateAndShowSuperBoost() {
       {{ response.error }}
     </h3>
     <div
-      class="mx-auto my-4 h-full w-full flex flex-col items-start justify-center rounded-lg p-4 shadow-md md:flex-row md:justify-around md:shadow-xl"
+      class="mx-auto my-4 h-full w-full w-full flex flex-col items-start justify-center border-2 rounded-lg p-4 shadow-md md:flex-row md:justify-around md:shadow-xl"
     >
-      <SortableList v-if="response && 'feed' in response" :title="response.feed.title" :feed="response.items" />
+      <div v-if="response && 'feed' in response" class="md:w-3/5">
+        <SortableList :title="response.feed.title" :feed="response.items" />
+      </div>
+
       <!-- A card that has a list of trending RSS feeds  -->
 
       <div
-        class="w-2/5 flex flex-col items-center justify-center text-center md:flex-row md:flex-wrap md:items-start md:space-x-6"
+        class="flex flex-col items-center justify-center text-center md:w-2/5 md:flex-row md:flex-wrap md:items-start md:space-x-6"
       >
         <div class="w-full flex flex-col space-y-2">
           <h2 class="text-2xl font-medium text-gray-800 md:text-3xl dark:text-white">

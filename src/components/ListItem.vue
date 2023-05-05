@@ -54,7 +54,7 @@ export default defineComponent({
 
 <template>
   <li
-    class="feed__item my-4 h-48 w-full overflow-auto border-2 border-pink-600 rounded-lg p-4 md:w-4xl"
+    class="feed__item my-4 h-48 w-full overflow-auto border-2 border-pink-600 rounded-lg p-4"
     tabIndex="0"
     role="button"
     @click="$emit('click')" @keypress.self.enter.space.prevent="$emit('click')"
